@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vapi_shortz | Professional Video Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg: #FFFFFF;
+            --surface: #F2F2F7;
+            --text: #000000;
+            --text-sub: #636366;
+            --accent: #6A0DAD;
+            --accent-soft: rgba(106, 13, 173, 0.1);
+            --border: rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0A0A0A;
+            --surface: #151515;
+            --text: #FFFFFF;
+            --text-sub: #8E8E93;
+            --accent: #8A2BE2;
+            --accent-soft: rgba(138, 43, 226, 0.2);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 15px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 1200px;
+            padding: 10px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            background: rgba(var(--bg), 0.7);
+            backdrop-filter: blur(25px);
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.03);
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; }
+        .profile-img {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+        .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -1px; }
+
+        /* --- Hero --- */
+        .hero { padding: 180px 5% 60px; text-align: center; }
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 11vw, 6.5rem); 
+            line-height: 0.95; font-weight: 800; margin-bottom: 25px;
+            letter-spacing: -2px; text-transform: uppercase;
+        }
+
+        .hud-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 30px; }
+        .hud-item {
+            font-size: 0.65rem; font-family: monospace; opacity: 0.6;
+            padding: 5px 12px; border: 1px solid var(--border); border-radius: 5px;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* --- Ticker --- */
+        .ticker {
+            background: var(--accent); color: white;
+            padding: 15px 0; overflow: hidden; white-space: nowrap;
+            display: flex; margin: 60px 0; transform: rotate(-1deg);
+        }
+        .ticker-wrap { display: flex; animation: ticker 30s linear infinite; }
+        .ticker-wrap span { font-family: 'Syne', sans-serif; padding: 0 40px; font-weight: 700; text-transform: uppercase; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- Interactive Pricing --- */
+        .pricing-section { padding: 0 5% 100px; max-width: 1400px; margin: 0 auto; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .price-card {
+            background: var(--surface); padding: 35px; border-radius: var(--radius);
+            border: 1px solid var(--border); transition: var(--transition);
+            cursor: pointer; text-decoration: none; color: inherit;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .price-card:hover { border-color: var(--accent); transform: translateY(-10px); box-shadow: 0 15px 35px var(--accent-soft); }
+        .price-card i { color: var(--accent); margin-bottom: 15px; }
+        .price-card h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 5px; }
+        
+        /* Updated Clear Price Font */
+        .price-card .cost { 
+            font-family: 'Inter', sans-serif; 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin-top: 15px; 
+            display: block; 
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Portfolio Sections --- */
+        .portfolio-section { padding: 60px 5% 80px; max-width: 1400px; margin: 0 auto; }
+        .category-title {
+            font-family: 'Syne', sans-serif; font-size: 2.2rem;
+            margin-bottom: 40px; display: flex; align-items: center; gap: 20px;
+        }
+        .category-title i { color: var(--accent); }
+        .category-title::after { content: ""; height: 1px; flex: 1; background: var(--border); }
+
+        .video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .video-box {
+            aspect-ratio: 9/16; background: #000; border-radius: var(--radius);
+            overflow: hidden; border: 1px solid var(--border); transition: var(--transition);
+            position: relative;
+        }
+        .video-box:hover { transform: scale(1.02); border-color: var(--accent); z-index: 5; }
+        video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+
+        /* --- Footer --- */
+        .footer {
+            background: var(--text); color: var(--bg);
+            margin: 0 5% 40px; padding: 100px 5%; border-radius: 40px;
+            text-align: center;
+        }
+        .btn-main {
+            display: inline-block; padding: 20px 45px; background: var(--accent);
+            color: white; text-decoration: none; border-radius: 100px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            margin-top: 40px; transition: var(--transition);
+        }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent); }
+
+        /* --- Animation Reveal --- */
+        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2.8rem; }
+            .category-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-brand">
+            <img src="Profile.jpg" alt="Vapi_shortz" class="profile-img">
+            <div class="logo">Vapi_shortz</div>
+        </div>
+        <button class="theme-btn" id="theme-btn" style="background:none; border:none; color:var(--text); cursor:pointer;">
+            <i data-lucide="moon"></i>
+        </button>
+    </nav>
+
+    <header class="hero">
+        <h1 class="reveal">CRAFTING<br>VIRAL MOTION</h1>
+        <p class="reveal">High-performance video production for brands who want to dominate the feed.</p>
+        <div class="hud-grid reveal">
+            <div class="hud-item"><i data-lucide="monitor" size="12"></i> 4K PRORES</div>
+            <div class="hud-item"><i data-lucide="zap" size="12"></i> 60FPS</div>
+            <div class="hud-item"><i data-lucide="instagram" size="12"></i> @Vapi_shortz</div>
+        </div>
+    </header>
+
+    <div class="ticker">
+        <div class="ticker-wrap">
+            <span>Car Delivery Edit</span> <span>Brand Advertisements</span> <span>Viral Shorts</span> <span>Sound Design</span> <span>Color Grading</span>
+            <span>Car Delivery Edit</span> <span>Brand Advertisements</span> <span>Viral Shorts</span> <span>Sound Design</span> <span>Color Grading</span>
+        </div>
+    </div>
+
+    <!-- Interactive Pricing Grid -->
+    <section class="pricing-section">
+        <div class="grid-container">
+            <a href="#car-section" class="price-card reveal">
+                <i data-lucide="car" size="32"></i>
+                <h3>Car Delivery Edit</h3>
+                <span class="cost">₹1999</span>
+            </a>
+            <a href="#adv-section" class="price-card reveal">
+                <i data-lucide="clapperboard" size="32"></i>
+                <h3>Advertisement Edit</h3>
+                <span class="cost">₹2499</span>
+            </a>
+            <a href="#simple-section" class="price-card reveal">
+                <i data-lucide="zap" size="32"></i>
+                <h3>Simple Edit</h3>
+                <span class="cost">₹799 - 999</span>
+            </a>
+            <a href="#shop-section" class="price-card reveal">
+                <i data-lucide="layers" size="32"></i>
+                <h3>2 Shop Edits</h3>
+                <span class="cost">₹2499</span>
+            </a>
+            <a href="#shop-section" class="price-card reveal">
+                <i data-lucide="store" size="32"></i>
+                <h3>1 Shop Edit</h3>
+                <span class="cost">₹1499</span>
+            </a>
+            <a href="#simple-section" class="price-card reveal">
+                <i data-lucide="copy" size="32"></i>
+                <h3>2 Simple Edits</h3>
+                <span class="cost">₹1499</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- CAR SECTION -->
+    <section id="car-section" class="portfolio-section">
+        <h2 class="category-title reveal"><i data-lucide="car"></i> Car Delivery Edits</h2>
+        <div class="video-grid">
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6137.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6138.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="7.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="4.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="13.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="10.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="9.mp4" type="video/mp4"></video></div>
+        </div>
+    </section>
+
+    <!-- ADVERTISEMENT SECTION -->
+    <section id="adv-section" class="portfolio-section">
+        <h2 class="category-title reveal"><i data-lucide="clapperboard"></i> Advertisements</h2>
+        <div class="video-grid">
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6329.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6328.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6305.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6304.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6303.MP4" type="video/mp4"></video></div>
+        </div>
+    </section>
+    
+    <!-- SHOP SECTION -->
+    <section id="shop-section" class="portfolio-section">
+        <h2 class="category-title reveal"><i data-lucide="store"></i> Shop Commercials</h2>
+        <div class="video-grid">
+            <div class="video-box reveal"><video controls preload="none"><source src="6.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="3.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="1.mp4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="5.mp4" type="video/mp4"></video></div>
+        </div>
+    </section>
+    
+    <!-- SIMPLE SECTION -->
+    <section id="simple-section" class="portfolio-section">
+        <h2 class="category-title reveal"><i data-lucide="zap"></i> Simple Edits</h2>
+        <div class="video-grid">
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6294.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="IMG_6235.MP4" type="video/mp4"></video></div>
+            <div class="video-box reveal"><video controls preload="none"><source src="2.mp4" type="video/mp4"></video></div>
+        </div>
+    </section>
+
+    <footer class="footer reveal">
+        <h2 style="font-family:'Syne'; font-size: clamp(1.8rem, 5vw, 3rem);">LET'S CREATE THE VIRAL</h2>
+        <p style="opacity: 0.7; margin-top: 15px;">Shoot karo — edit hum karenge PRO level pe!</p>
+        <a href="https://instagram.com/vapi_shortz" target="_blank" class="btn-main">DM @Vapi_shortz</a>
+        <div style="margin-top: 60px; font-size: 0.65rem; opacity: 0.4; letter-spacing: 2px; text-transform: uppercase;">
+            Vapi_shortz © 2024 / ALL RIGHTS RESERVED
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-btn');
+        const html = document.documentElement;
+        themeBtn.addEventListener('click', () => {
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeBtn.innerHTML = isDark ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
+            lucide.createIcons();
+        });
+
+        // One Video Logic
+        const vids = document.querySelectorAll('video');
+        vids.forEach(v => {
+            v.addEventListener('play', () => {
+                vids.forEach(other => { if(other !== v) other.pause(); });
+            });
+        });
+
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth Scroll for Pricing Links
+        document.querySelectorAll('.price-card').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if(targetId.startsWith('#')) {
+                    e.preventDefault();
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
