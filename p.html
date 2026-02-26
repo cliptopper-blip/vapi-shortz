@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Topping | Shahnawz Developer Final Edition</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #E23744;
+            --primary-glow: rgba(226, 55, 68, 0.4);
+            --bg: #f4f7f9;
+            --white: #ffffff;
+            --dark: #1c1c1c;
+            --grey: #686b78;
+            --green: #10b981;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--dark); overflow-x: hidden; width: 100%; }
+
+        /* --- STARTUP POPUP --- */
+        #devIntro {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.97); z-index: 10000;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .dev-box {
+            background: var(--white); border-radius: 25px; padding: 30px;
+            text-align: center; max-width: 380px; width: 100%;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .dev-img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); margin-bottom: 15px; box-shadow: 0 0 15px var(--primary-glow); }
+        .glow-btn { background: var(--primary); color: white; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; box-shadow: 0 4px 15px var(--primary-glow); }
+        .glow-btn:hover { transform: scale(1.02); }
+
+        /* --- HEADER --- */
+        header {
+            background: var(--white); padding: 12px 5%;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 26px; font-weight: 800; color: var(--primary); cursor: pointer; }
+        .search-container { background: #f3f3f6; border-radius: 12px; padding: 8px 15px; display: flex; align-items: center; width: 40%; }
+        .search-container input { border: none; background: none; outline: none; width: 100%; margin-left: 8px; font-size: 14px; }
+        .nav-icons { display: flex; gap: 20px; align-items: center; }
+        .nav-item { cursor: pointer; text-align: center; color: var(--grey); position: relative; font-size: 13px; font-weight: 500; }
+        .nav-item.active { color: var(--primary); }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+
+        /* --- VIEWS --- */
+        .view { display: none; padding: 20px 5%; width: 100%; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MENU GRID --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .food-card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); transition: 0.3s; position: relative; }
+        .food-img { width: 100%; height: 180px; object-fit: cover; }
+        .food-info { padding: 15px; }
+
+        /* --- CART & SUMMARY --- */
+        .cart-container { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+        .cart-items-box, .account-box, .receipt-box { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--border); }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f8f8f8; }
+        .qty-ctrl { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--primary); border-radius: 8px; padding: 2px 10px; color: var(--primary); font-weight: 800; }
+        .summary-box { background: white; border-radius: 20px; padding: 20px; height: fit-content; position: sticky; top: 100px; border: 1px solid var(--border); }
+
+        /* --- PAYMENT OPTIONS --- */
+        .pay-option { border: 2px solid #f0f0f0; border-radius: 15px; padding: 15px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+        .pay-option.active { border-color: var(--primary); background: #fff5f6; color: var(--primary); }
+
+        /* --- HISTORY & RECEIPT --- */
+        .history-card { 
+            background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; cursor: pointer; transition: 0.2s;
+        }
+        .history-card:hover { border-color: var(--primary); background: #fdfdfd; }
+        
+        .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; }
+        .status-paid { background: #e8f5e9; color: #2e7d32; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+
+        .receipt-header { text-align: center; border-bottom: 1px dashed #ddd; padding-bottom: 15px; margin-bottom: 15px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 850px) {
+            .cart-container { grid-template-columns: 1fr; }
+            .search-container { width: 100%; order: 3; margin-top: 10px; }
+            header { flex-wrap: wrap; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .food-img { height: 140px; }
+        }
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: 1fr; }
+            .nav-item small { display: none; }
+        }
+
+        .input-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; margin-bottom: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <!-- Startup Popup -->
+    <div id="devIntro">
+        <div class="dev-box">
+            <img src="https://i.postimg.cc/t4KZSHy7/Screenshot-20260226-132341-2.jpg" class="dev-img">
+            <h2 style="font-weight: 800;">TOPPING PIZZA</h2>
+            <p>Premium Ordering Experience UI<br><b>By Shahnawz Developer</b></p>
+            <button class="glow-btn" onclick="document.getElementById('devIntro').style.display='none'">START DEMO</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo" onclick="showView('home')">Topping</div>
+        <div class="search-container">
+            <i class="fa fa-search" style="color: var(--primary);"></i>
+            <input type="text" id="mainSearch" placeholder="Search pizza..." onkeyup="handleSearch()">
+        </div>
+        <div class="nav-icons">
+            <div class="nav-item" onclick="showView('home')" id="nav-home"><i class="fa fa-house"></i><br><small>Home</small></div>
+            <div class="nav-item" onclick="showView('account')" id="nav-account"><i class="fa fa-user-circle"></i><br><small>Account</small></div>
+            <div class="nav-item" onclick="showView('cart')" id="nav-cart">
+                <i class="fa fa-shopping-basket"></i><br><small>Cart</small>
+                <span class="cart-badge" id="cartCountBadge">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- View: Home -->
+    <div id="view-home" class="view active">
+        <h2 style="margin-bottom: 20px; font-weight: 800;">Explore Menu</h2>
+        <div class="grid" id="foodGrid"></div>
+    </div>
+
+    <!-- View: Cart -->
+    <div id="view-cart" class="view">
+        <h2 style="margin-bottom: 20px; font-weight: 800;">My Cart</h2>
+        <div class="cart-container">
+            <div class="cart-items-box" id="cartList"></div>
+            <div class="summary-box">
+                <h3 style="margin-bottom: 15px;">Order Summary</h3>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <input type="text" id="couponInput" class="input-field" placeholder="Code: TOPPING50" style="margin:0;">
+                    <button class="glow-btn" style="width: 80px; padding: 0;" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div class="receipt-row" style="color: var(--grey);"><span>Subtotal</span><span id="sumTotal">₹0</span></div>
+                <div class="receipt-row" style="color: var(--green);"><span>Discount</span><span id="sumDisc">-₹0</span></div>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                <div class="receipt-row" style="font-weight:800; font-size:18px;"><span>Total Amount</span><span id="sumGrand">₹0</span></div>
+                <br>
+                <button class="glow-btn" onclick="showView('checkout')">PROCEED TO CHECKOUT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Checkout -->
+    <div id="view-checkout" class="view">
+        <div class="account-box" style="max-width: 500px; margin: 0 auto;">
+            <h2 style="margin-bottom: 20px;">Delivery Details</h2>
+            <select class="input-field" id="orderType" onchange="toggleOrderType()">
+                <option value="Home">Home Delivery</option>
+                <option value="Table">Dine-in (Table)</option>
+            </select>
+            <div id="addrBox"><input type="text" id="orderAddr" class="input-field" placeholder="Complete Address"></div>
+            <div id="tableBox" style="display:none">
+                <select id="orderTable" class="input-field">
+                    <option value="">Select Table No</option>
+                    <script>for(let i=1; i<=10; i++) document.write(`<option>Table ${i}</option>`)</script>
+                </select>
+            </div>
+            <h4 style="margin: 15px 0 10px;">Payment Method</h4>
+            <div class="pay-option active" id="p-cash" onclick="setPay('Cash')"><i class="fa fa-wallet"></i> Cash on Delivery</div>
+            <div class="pay-option" id="p-upi" onclick="setPay('UPI')"><i class="fa fa-mobile-screen"></i> Online UPI (Mock)</div>
+            <div id="upiField" style="display:none"><input type="text" id="upiId" class="input-field" placeholder="upi-id@okaxis"></div>
+            <button class="glow-btn" style="margin-top:10px; height: 50px;" onclick="processOrder()">PLACE ORDER</button>
+        </div>
+    </div>
+
+    <!-- View: Account -->
+    <div id="view-account" class="view">
+        <div class="account-box" style="text-align:center; margin-bottom: 20px;">
+            <img src="https://i.postimg.cc/t4KZSHy7/Screenshot-20260226-132341-2.jpg" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border: 3px solid var(--primary);">
+            <h3 style="margin-top:10px;">Shahnawz Developer</h3>
+            <p style="color:var(--grey);">Premium Member</p>
+        </div>
+        <div class="account-box">
+            <h3 style="margin-bottom: 15px;">Order History</h3>
+            <div id="historyList"><p style="color:gray; text-align:center;">No orders yet.</p></div>
+        </div>
+    </div>
+
+    <!-- View: Order Detail (The Receipt) -->
+    <div id="view-order-detail" class="view">
+        <button onclick="showView('account')" style="background:none; border:none; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:15px;"><i class="fa fa-arrow-left"></i> Back to History</button>
+        <div class="receipt-box" id="receiptContent" style="max-width: 500px; margin: 0 auto;">
+            <!-- Receipt loaded by JS -->
+        </div>
+    </div>
+
+    <!-- View: Tracking -->
+    <div id="view-tracking" class="view">
+        <div class="account-box" style="text-align:center; max-width: 500px; margin: 0 auto;">
+            <i class="fa fa-circle-check" style="font-size: 60px; color: var(--green); margin-bottom: 15px;"></i>
+            <h2 style="color:var(--green)">Order Placed!</h2>
+            <p id="trackId" style="margin: 10px 0; font-weight: 700; color: var(--grey); background: #eee; padding: 5px;"></p>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <p>Your pizza is being prepared. View details in your account.</p>
+            <button class="glow-btn" style="margin-top: 20px;" onclick="showView('account')">VIEW ORDER DETAILS</button>
+        </div>
+    </div>
+
+    <script>
+        const menuItems = [
+            { id: 1, name: "Margherita Classic", price: 199, img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=600" },
+            { id: 2, name: "Paneer Tikka Pizza", price: 299, img: "https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=600" },
+            { id: 3, name: "Peri Peri Chicken", price: 399, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600" },
+            { id: 4, name: "Farmhouse Special", price: 249, img: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600" },
+            { id: 5, name: "Cheese n Corn", price: 180, img: "https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?w=600" },
+            { id: 6, name: "Spicy Mexican", price: 320, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600" }
+        ];
+
+        let cart = {};
+        let orderHistory = [];
+        let discount = 0;
+        let currentPay = 'Cash';
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(document.getElementById('nav-' + id)) document.getElementById('nav-' + id).classList.add('active');
+            if(id === 'cart') renderCart();
+            if(id === 'account') renderHistory();
+            window.scrollTo(0,0);
+        }
+
+        function handleSearch() {
+            const q = document.getElementById('mainSearch').value.toLowerCase();
+            const filtered = menuItems.filter(m => m.name.toLowerCase().includes(q));
+            renderMenu(filtered);
+            showView('home');
+        }
+
+        function renderMenu(items) {
+            const grid = document.getElementById('foodGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="food-card">
+                    <img src="${p.img}" class="food-img">
+                    <div class="food-info">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span style="font-weight:700;">${p.name}</span>
+                            <span style="color:var(--green); font-weight:800;">4.5 ★</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:800; font-size:18px;">₹${p.price}</span>
+                            <button class="glow-btn" style="width:80px; padding:8px;" onclick="addToCart(${p.id})">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            cart[id] = (cart[id] || 0) + 1;
+            updateBadge();
+        }
+
+        function updateBadge() {
+            const count = Object.values(cart).reduce((a,b) => a+b, 0);
+            document.getElementById('cartCountBadge').innerText = count;
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cartList');
+            let subtotal = 0; let html = "";
+            if(Object.keys(cart).length === 0) {
+                list.innerHTML = `<p style="text-align:center; padding:40px; color:gray;">Cart is empty!</p>`;
+            } else {
+                for(let id in cart) {
+                    const item = menuItems.find(m => m.id == id);
+                    subtotal += item.price * cart[id];
+                    html += `<div class="cart-item">
+                        <div><p style="font-weight:700;">${item.name}</p><p style="font-size:12px; color:gray;">₹${item.price}</p></div>
+                        <div class="qty-ctrl">
+                            <span onclick="updateQty(${id}, -1)" style="cursor:pointer">-</span>
+                            <span>${cart[id]}</span>
+                            <span onclick="updateQty(${id}, 1)" style="cursor:pointer">+</span>
+                        </div>
+                    </div>`;
+                }
+                list.innerHTML = html;
+            }
+            document.getElementById('sumTotal').innerText = "₹" + subtotal;
+            document.getElementById('sumDisc').innerText = "-₹" + (subtotal > 0 ? discount : 0);
+            document.getElementById('sumGrand').innerText = "₹" + Math.max(0, subtotal - discount);
+        }
+
+        function updateQty(id, delta) {
+            cart[id] += delta;
+            if(cart[id] <= 0) delete cart[id];
+            renderCart();
+            updateBadge();
+        }
+
+        function applyCoupon() {
+            if(document.getElementById('couponInput').value.toUpperCase() === 'TOPPING50') {
+                discount = 50; alert("Coupon Applied!"); renderCart();
+            } else { alert("Use TOPPING50"); }
+        }
+
+        function toggleOrderType() {
+            const val = document.getElementById('orderType').value;
+            document.getElementById('addrBox').style.display = (val === 'Home') ? 'block' : 'none';
+            document.getElementById('tableBox').style.display = (val === 'Table') ? 'block' : 'none';
+        }
+
+        function setPay(m) {
+            currentPay = m;
+            document.getElementById('p-cash').classList.toggle('active', m === 'Cash');
+            document.getElementById('p-upi').classList.toggle('active', m === 'UPI');
+            document.getElementById('upiField').style.display = (m === 'UPI') ? 'block' : 'none';
+        }
+
+        function processOrder() {
+            if(Object.keys(cart).length === 0) return alert("Cart empty!");
+            const type = document.getElementById('orderType').value;
+            const detail = type === 'Home' ? document.getElementById('orderAddr').value : document.getElementById('orderTable').value;
+            if(!detail) return alert("Enter details!");
+
+            const orderId = "TOP-" + Math.floor(100000 + Math.random() * 900000);
+            
+            // Capture items for history
+            const orderItems = [];
+            for(let id in cart) {
+                const item = menuItems.find(m => m.id == id);
+                orderItems.push({ name: item.name, qty: cart[id], price: item.price });
+            }
+
+            const newOrder = {
+                id: orderId,
+                items: orderItems,
+                subtotal: document.getElementById('sumTotal').innerText,
+                discount: document.getElementById('sumDisc').innerText,
+                total: document.getElementById('sumGrand').innerText,
+                type: type,
+                detail: detail,
+                payMethod: currentPay,
+                status: (currentPay === 'UPI' ? 'PAID' : 'PAY ON DELIVERY'),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+
+            orderHistory.unshift(newOrder);
+            cart = {}; updateBadge();
+            document.getElementById('trackId').innerText = "Order ID: " + orderId;
+            showView('tracking');
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if(orderHistory.length === 0) return;
+            list.innerHTML = orderHistory.map(o => `
+                <div class="history-card" onclick="viewReceipt('${o.id}')">
+                    <div>
+                        <p style="font-weight:700;">${o.id}</p>
+                        <p style="font-size:12px; color:gray;">${o.date} • ${o.items.length} Item(s)</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="font-weight:800; color:var(--primary);">${o.total}</p>
+                        <span class="status-badge ${o.status === 'PAID' ? 'status-paid' : 'status-pending'}">${o.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewReceipt(id) {
+            const o = orderHistory.find(x => x.id === id);
+            const content = document.getElementById('receiptContent');
+            
+            let itemsHtml = o.items.map(i => `
+                <div class="receipt-row"><span>${i.qty} x ${i.name}</span><span>₹${i.qty * i.price}</span></div>
+            `).join('');
+
+            content.innerHTML = `
+                <div class="receipt-header">
+                    <h2 style="color:var(--primary)">TOPPING PIZZA</h2>
+                    <p style="font-size:12px; color:gray;">Official Order Receipt</p>
+                </div>
+                <div class="receipt-row"><strong>Order ID:</strong> <span>${o.id}</span></div>
+                <div class="receipt-row"><strong>Date/Time:</strong> <span>${o.date} | ${o.time}</span></div>
+                <div class="receipt-row"><strong>Type:</strong> <span>${o.type} (${o.detail})</span></div>
+                <div class="receipt-row"><strong>Payment:</strong> <span class="status-badge ${o.status === 'PAID' ? 'status-paid' : 'status-pending'}">${o.status}</span></div>
+                <hr style="margin:15px 0; border:0; border-top:1px dashed #ddd;">
+                ${itemsHtml}
+                <hr style="margin:15px 0; border:0; border-top:1px dashed #ddd;">
+                <div class="receipt-row"><span>Subtotal</span><span>${o.subtotal}</span></div>
+                <div class="receipt-row" style="color:var(--green)"><span>Discount</span><span>${o.discount}</span></div>
+                <div class="receipt-row" style="font-weight:800; font-size:18px; margin-top:10px;"><span>Total Paid</span><span>${o.total}</span></div>
+                <div style="text-align:center; margin-top:25px; font-size:12px; color:gray;">
+                    <p>Thank you for choosing Topping!</p>
+                    <p>Demo Receipt by Shahnawz Dev</p>
+                </div>
+            `;
+            showView('order-detail');
+        }
+
+        renderMenu(menuItems);
+    </script>
+</body>
+</html>
